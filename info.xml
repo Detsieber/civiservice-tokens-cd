@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<extension key="sfe.cd.customization" type="module">
+  <file>customization</file>
+  <name>CD customization</name>
+  <description>This extension contains customized functionality specifically created for Christliche Dienste</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Detlev Sieber</author>
+    <email>detlev.sieber@t-online.de</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">http://sfe-ev.org</url>
+    <url desc="Documentation">Documentation within Christliche Dienste</url>
+    <url desc="Support">Support is provided by SfE and Detlev Sieber</url>
+    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2017-06-19</releaseDate>
+  <version>1.1</version>
+  <develStage>stable</develStage>
+  <compatibility>
+    <ver>4.7</ver>
+  </compatibility>
+  <comments>This module is created during the implementation of CiviCRM at Christliche Dienste</comments>
+  <civix>
+    <namespace>CRM/Customization</namespace>
+  </civix>
+</extension>
