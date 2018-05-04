@@ -36,6 +36,7 @@ function latestrelationship_customization_declare($token){
     $token. '.related_po_custom_3' => 'Arbeitszeit',
     $token. '.related_po_custom_2' => 'Taschengeld',
     $token. '.related_po_custom_4' => 'Urlaub',
+    $token. '.gemeindereferenz' => 'Gemeindereferenz',
 
   );
 }
@@ -93,8 +94,31 @@ function latestrelationship_customization_get($cid, &$value){
       'id' => $contact_id_po,
     )); 
 
+/* Get für Gemeindereferenz die aktuellsten Freiwilligen 
+/* Sort descending, because latest relationship should be the first one
+/* Look up only relationship_type_id "Gemeindereferenz" (id=16)
+*/
+    $result_gemeindereferenz = civicrm_api3('Relationship', 'get', array(
+      'sequential' => 1,
+      'return' => array("contact_id_b"),
+      'contact_id_a' => $cid,
+      'relationship_type_id' => 16,
+      'options' => array('sort' => "id DESC"),
+    ));
+
+    $contact_id_fw = $result_gemeindereferenz['values'][0]['contact_id_b'];
+
+    $related_fw_referenz = civicrm_api3('Contact', 'get', array(
+      'sequential' => 1,
+      'return' => array("display_name", "sort_name"),
+      'id' => $contact_id_fw,
+    )); 
 
 
+
+
+/* Populate tokens 
+*/
 
     $value['latestrelationship.contact_id_b'] = $contact_id_b;
     $value['latestrelationship.start_date'] = CRM_Utils_Date::customFormat($result['values'][0]['start_date']); 
@@ -123,6 +147,6 @@ function latestrelationship_customization_get($cid, &$value){
     $value['latestrelationship.related_po_custom_2'] = $related_po_result['values'][0]['custom_2']; 
     $value['latestrelationship.related_po_custom_4'] = $related_po_result['values'][0]['custom_4']; 
 
-
+    $value['latestrelationship.gemeindereferenz'] = $related_fw_referenz['values'][0]['display_name']; 
 
 }
