@@ -166,6 +166,7 @@ if (empty($fw_id['values'][0])){
          array(date(Y,strtotime("-24 months"))."01010000",
                date(Y)."12312359")
                ),
+      'options' => ['limit' => 1000],
     ));
     $value['contributionsum.uk_sum_softcredit'] = array_sum(array_column($uk_sum['values'], 'amount'));
 
