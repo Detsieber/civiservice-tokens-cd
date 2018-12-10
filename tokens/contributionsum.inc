@@ -95,6 +95,24 @@ if (empty($fw_id['values'][0])){
         $value['contributionsum.fw_name'] = $fw_name['values'][0]['display_name']; 
         }
       }
+// Last Case: There are no contributions of type UK-Spenden (maybe only UK-Abschlag).
+// and, basically we are looking for the volunteer, for whom we have a relationship:
+// For this case, we are testing, if contributionsum.fw_name is empty:
+if (empty($contributionsum[fw_name])){
+    $fw_id = civicrm_api3('Relationship', 'get', array(
+      'sequential' => 1,
+      'return' => array('id', 'contact_id_b'),
+      'contact_id_a' => $cid,
+      'relationship_type_id' => 17,
+      'options' => array('sort' => "id DESC"),
+    ));
+    $fw_name = civicrm_api3('Contact', 'get', array(
+      'sequential' => 1,
+      'return' => array("display_name"),
+      'id' => $fw_id['values'][0]['contact_id_b'],
+    ));
+    $value['contributionsum.fw_name'] = $fw_name['values'][0]['display_name']; 
+    }
 
 
 
