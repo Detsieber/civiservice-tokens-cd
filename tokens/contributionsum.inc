@@ -15,6 +15,7 @@ function contributionsum_customization_declare($token){
   return array(
     $token. '.fw_name' => 'Name Freiwillige/r aus UK-Spende',
     $token. '.fw_sum' => 'Summe UK-Spende für akt. Freiwillige/n',
+    $token. '.fw_sum_last_yr' => 'Summe UK-Spende für akt. Freiwillige/n (nur letztes Jahr)',
     $token. '.cd_sum_current_yr' => 'Summe Spenden für CD (aktuelles Jahr)',
     $token. '.cd_sum_last_yr' => 'Summe Spenden für CD (letztes Jahr)',
     $token. '.uk_lumpsums' => 'Summe UK-Abschläge',
@@ -47,6 +48,24 @@ function contributionsum_customization_get($cid, &$value){
       'options' => array('sort' => "id DESC"),
     ));
     $value['contributionsum.fw_sum'] = array_sum(array_column($uk_spende['values'], 'total_amount'));
+
+/* fw_sum_last_yr:
+ * Get all contributions of type "UK-Spende" within the last year. 
+ * Then, all values in $uk_spende are summed up.
+ * The values of $uk_spende_last_yr will be used later to determine the token value for fw_name
+*/
+    $uk_spende_last_yr = civicrm_api3('Contribution', 'get', array(
+      'sequential' => 1,
+      'return' => array("id", "soft_credit_to", "total_amount"),
+      'contact_id' => $cid,
+      'financial_type_id' => "UK-Spende",
+      'receive_date' => array('BETWEEN' => 
+         array(date(Y,strtotime("-12 months"))."01012359",
+               date(Y,strtotime("-12 months"))."12312359")
+               ),
+      'options' => array('sort' => "id DESC"),
+    ));
+    $value['contributionsum.fw_sum_last_yr'] = array_sum(array_column($uk_spende_last_yr['values'], 'total_amount'));
 
 
 /* fw_name:
@@ -98,7 +117,7 @@ if (empty($fw_id['values'][0])){
 // Last Case: There are no contributions of type UK-Spenden (maybe only UK-Abschlag).
 // and, basically we are looking for the volunteer, for whom we have a relationship:
 // For this case, we are testing, if contributionsum.fw_name is empty:
-if (empty($contributionsum[fw_name])){
+ if (empty($value['contributionsum.fw_name'])){
     $fw_id = civicrm_api3('Relationship', 'get', array(
       'sequential' => 1,
       'return' => array('id', 'contact_id_b'),
@@ -113,7 +132,7 @@ if (empty($contributionsum[fw_name])){
     ));
     $value['contributionsum.fw_name'] = $fw_name['values'][0]['display_name']; 
     }
-
+ 
 
 
 /* cd_sum_current_yr
